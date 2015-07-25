@@ -10,7 +10,7 @@ class action_plugin_stopforumspam extends DokuWiki_Action_Plugin
 {
     public function register(Doku_Event_Controller $controller)
     {
-        $controller->register_hook('AUTH_USER_CHANGE', 'BEFORE', $this, "check_spammer_database", )
+        $controller->register_hook('AUTH_USER_CHANGE', 'BEFORE', $this, "check_spammer_database");
     }
 
     private function do_check($username, $email, $ip)
