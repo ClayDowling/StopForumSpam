@@ -48,7 +48,7 @@ class action_plugin_stopforumspam extends DokuWiki_Action_Plugin
                 $can_modify = false;
             }
             if ($can_modify === false) {
-                msg('Potentially a spammer');
+                msg('Potentially a spammer', -1);
                 $event->preventDefault();
             }
         }
