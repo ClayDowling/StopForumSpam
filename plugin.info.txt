@@ -1,0 +1,7 @@
+base    StopForumSpam
+author  Clay Dowling
+email   clay@lazarusid.com
+date    2015-07-25
+name    Stop Forum Spam
+desc    Checks new users against a database of known spammers maintained by stopforumspam.org
+url     http://www.lazarusid.com/StopForumSpam
