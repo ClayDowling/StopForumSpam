@@ -35,14 +35,16 @@ class action_plugin_stopforumspam extends DokuWiki_Action_Plugin
         if ($event->data['type'] == 'create') {
 
             $response = $this->do_check($event->data['params'][0],
-            $event->data['params'][3], $_SERVER['REMOTE_ADDR']);
-            if ($response['email']['appears'] != 0) {
+                    $event->data['params'][3], $_SERVER['REMOTE_ADDR']);
+            if ($response->email->appears != 0) {
                 $can_modify = false;
             }
-            if ($response['username']['appears'] != 0) {
-                $can_modify = false;
+            if ($response->username->appears != 0) {
+                if ($response->username->confidence > 10.0) {
+                    $can_modify = false;
+                }
             }
-            if ($response['ip']['appears'] != 0) {
+            if ($response->ip->appears != 0) {
                 $can_modify = false;
             }
             if ($can_modify === false) {
