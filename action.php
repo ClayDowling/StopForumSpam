@@ -16,7 +16,7 @@ class action_plugin_stopforumspam extends DokuWiki_Action_Plugin
     private function do_check($username, $email, $ip)
     {
         $uri = sprintf("http://api.stopforumspam.org/api?f=json&email=%s&username=%s&ip=%s",
-            $email, $username, $ip);
+            urlencode($email), urlencode($username), urlencode($ip));
         $json = file_get_contents($uri);
 
         $log_message = sprintf("StopForumSpam: username=%s,email=%s,ip=%s,response=%s",
