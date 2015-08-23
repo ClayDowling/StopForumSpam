@@ -1,3 +1,3 @@
 <?php
 
-$meta['database']         = array('string');
+$meta['tolerance']        = array('');

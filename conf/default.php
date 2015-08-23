@@ -1,3 +1,3 @@
 <?php
 
-$conf['database']         = '';
+$conf['tolerance']        = 10.0;
