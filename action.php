@@ -16,6 +16,7 @@ class action_plugin_stopforumspam extends DokuWiki_Action_Plugin
     public $tolerance = 10.0;
 
     protected $logger;
+    protected $checker;
 
     public function __construct() {
         DokuWiki_Action_Plugin::__construct();
@@ -26,6 +27,7 @@ class action_plugin_stopforumspam extends DokuWiki_Action_Plugin
         $this->tolerance = $this->conf['tolerance'];
 
         $this->logger = new SpamLogger($DOKU_INC . "/data/pages/spamlogger");
+        $this->checker = new ResponseChecker($this->tolerance);
 
         $this->success = true;
     }
@@ -40,11 +42,7 @@ class action_plugin_stopforumspam extends DokuWiki_Action_Plugin
         $uri = sprintf("http://api.stopforumspam.org/api?f=json&email=%s&username=%s&ip=%s",
             urlencode($email), urlencode($username), urlencode($ip));
         $json = file_get_contents($uri);
-
-        if ($json === false) {
-            return false;
-        }
-        return json_decode($json);
+        return $json;
     }
 
     public function check_spammer_database(Doku_Event $event, $param)
@@ -56,45 +54,14 @@ class action_plugin_stopforumspam extends DokuWiki_Action_Plugin
             $email = $event->data['params'][3];
             $ip = $_SERVER['REMOTE_ADDR'];
             $response = $this->do_check($username, $email, $ip);
-            $trigger = '';
 
-            $status = $this->checkResponse($response);
-
-            if ($can_modify === false) {
+            if ($this->checker->userIsValid($response) === false) {
                 msg('Potentially a spammer', -1);
                 $event->preventDefault();
             }
-            $this->logger->LogAttempt($username, $email, $ip, $trigger, $confidence, $can_modify);
+            $this->logger->LogAttempt($username, $email, $ip, $this->checker->trigger,
+                $this->checker->confidence, $this->checker->accepted);
         }
     }
 
-    /**
-     * @param $response
-     * @return array
-     */
-    public function checkResponse($response)
-    {
-        $spammer = true;
-        $trigger = "";
-        $confidence = 0;
-
-        if (($spammer = ($response->email->occurs > 0 && $response->email->confidence > $this->tolerance)) == false) {
-            $trigger = 'email';
-            $confidence = $response->email->confidence;
-        }
-        else if (($spammer  = ($response->username->occurs > 0 && $response->username->confidence > $this->tolerance)) == false) {
-            $trigger = 'username';
-            $confidence = $response->username->confidence;
-        }
-        else if (($spammer = ($response->ip->occurs > 0 && $response->ip->confidence > $this->tolerance)) == false) {
-            $trigger = 'ip';
-            $confidence = $response->ip->confidence;
-        }
-
-        $result["trigger"] = $trigger;
-        $result["spammer"] = $spammer;
-        $result["confidence"] = $confidence;
-
-        return $result;
-    }
 }
