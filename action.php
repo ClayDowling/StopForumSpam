@@ -6,22 +6,26 @@
  * Date: 7/25/15
  * Time: 6:02 PM
  */
+
+require("SpamLogger.php");
+
 class action_plugin_stopforumspam extends DokuWiki_Action_Plugin
 {
     private $db = 0;
     public $databasefile = '';
     public $tolerance = 10.0;
 
+    protected $logger;
+
     public function __construct() {
         DokuWiki_Action_Plugin::__construct();
 
-        $testing = getenv("TESTING");
-        if ($testing == "") {
-            $this->loadConfig();
+        global $DOKU_INC;
 
-            $this->tolerance = $this->conf['tolerance'];
+        $this->loadConfig();
+        $this->tolerance = $this->conf['tolerance'];
 
-        }
+        $this->logger = new SpamLogger($DOKU_INC . "/data/pages/spamlogger");
 
         $this->success = true;
     }
@@ -36,10 +40,6 @@ class action_plugin_stopforumspam extends DokuWiki_Action_Plugin
         $uri = sprintf("http://api.stopforumspam.org/api?f=json&email=%s&username=%s&ip=%s",
             urlencode($email), urlencode($username), urlencode($ip));
         $json = file_get_contents($uri);
-
-        $log_message = sprintf("StopForumSpam: username=%s,email=%s,ip=%s,response=%s",
-            $username, $email, $ip, $json);
-        error_log($log_message);
 
         if ($json === false) {
             return false;
@@ -58,57 +58,14 @@ class action_plugin_stopforumspam extends DokuWiki_Action_Plugin
             $response = $this->do_check($username, $email, $ip);
             $trigger = '';
 
-            list($can_modify, $trigger) = $this->checkResponse($response);
+            $status = $this->checkResponse($response);
 
             if ($can_modify === false) {
                 msg('Potentially a spammer', -1);
                 $event->preventDefault();
             }
-            $this->log_spam_attempt($username, $email, $ip, $trigger, $confidence, $can_modify);
+            $this->logger->LogAttempt($username, $email, $ip, $trigger, $confidence, $can_modify);
         }
-    }
-
-    protected function check_category($status) {
-        if ($status->appears != 0) {
-            if ($status->confidence > $this->tolerance) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    private function log_spam_attempt($username, $email, $ip, $trigger, $confidence, $accepted)
-    {
-        $fd = $this->log_file_create();
-        $date = new DateTime();
-        fputcsv($fd, array($date->format(DateTime::ISO8601), $username, $email, $ip, $trigger, $confidence, $accepted));
-        fclose($fd);
-    }
-
-    private function log_file_create()
-    {
-        global $DOKU_INC;
-        $datepart = date("%Y-%m");
-        $directory = $DOKU_INC . "/data/pages/stopforumspam";
-        $filename = sprintf("%s/%s.csv", $directory, $datepart);
-        $fd = 0;
-        if (file_exists($filename)) {
-            mkdir($directory, 0755, true);
-            $fd = fopen($filename, "w");
-            fputcsv($fd, array(
-                "DATE",
-                "USERNAME",
-                "EMAIL",
-                "IP",
-                "TRIGGER",
-                "CONFIDENCE",
-                "ACCEPTED"
-            ));
-        } else {
-            $fd = fopen($filename, "a");
-        }
-
-        return $fd;
     }
 
     /**
