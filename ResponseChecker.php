@@ -8,12 +8,12 @@
  */
 
 class ResponseCategory {
-    public $occurs;
+    public $frequency;
     public $confidence;
 
-    function __construct($occurs = 0, $confidence = 0.0)
+    function __construct($frequency = 0, $confidence = 0.0)
     {
-        $this->occurs = $occurs;
+        $this->frequency = $frequency;
         $this->confidence = $confidence;
     }
 
@@ -63,16 +63,16 @@ class Response {
      */
     protected function ResponseCategoryFromAssoc($assoc)
     {
-        $occurs = 0;
+        $frequency = 0;
         $confidence = 0.0;
 
-        if (isset($assoc['occurs'])) {
-            $occurs = $assoc['occurs'];
+        if (isset($assoc['frequency'])) {
+            $frequency = $assoc['frequency'];
         }
         if (isset($assoc['confidence'])) {
             $confidence = $assoc['confidence'];
         }
-        return new ResponseCategory($occurs, $confidence);
+        return new ResponseCategory($frequency, $confidence);
     }
 }
 
@@ -82,7 +82,7 @@ class ResponseChecker
 
     public $accepted;
     public $confidence;
-    public $occurs;
+    public $frequency;
     public $trigger;
 
     /// Maximum Confidence which a category may have and be considered a valid user
@@ -133,9 +133,9 @@ class ResponseChecker
      */
     private function categoryIsValid(ResponseCategory $category)
     {
-        if ($category->occurs > 0 && $category->confidence > $this->tolerance) {
+        if ($category->frequency > 0 && $category->confidence > $this->tolerance) {
             $this->confidence = $category->confidence;
-            $this->occurs = $category->occurs;
+            $this->frequency = $category->frequency;
             return false;
         }
         return true;
