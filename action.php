@@ -26,7 +26,8 @@ class action_plugin_stopforumspam extends DokuWiki_Action_Plugin
         $this->loadConfig();
         $this->tolerance = $this->conf['tolerance'];
 
-        $this->logger = new SpamLogger($DOKU_INC . "/data/pages/spamlogger");
+        //$this->logger = new SpamLogger($DOKU_INC . "/data/pages/spamlogger");
+        $this->logger = new SpamLogger("/tmp");
         $this->checker = new ResponseChecker($this->tolerance);
 
         $this->success = true;
