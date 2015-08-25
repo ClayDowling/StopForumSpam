@@ -41,7 +41,7 @@ class SpamLogger
             $fd = fopen($filename, "a");
         } else {
             if (!file_exists($this->logdir)) {
-                mkdir($this->logdir, 0.755, true);
+                mkdir($this->logdir, 0755, true);
             }
             $fd = fopen($filename, "w");
             fputcsv($fd, array(
