@@ -8,6 +8,7 @@
  */
 
 require("SpamLogger.php");
+require("ResponseChecker.php");
 
 class action_plugin_stopforumspam extends DokuWiki_Action_Plugin
 {
