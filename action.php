@@ -21,7 +21,7 @@ class action_plugin_stopforumspam extends DokuWiki_Action_Plugin
 
     public function __construct() {
 
-        global $DOKU_INC;
+        global $DOKU_CONF;
 
         $this->loadConfig();
         $this->tolerance = $this->conf['tolerance'];
