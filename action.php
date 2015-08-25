@@ -28,7 +28,7 @@ class action_plugin_stopforumspam extends DokuWiki_Action_Plugin
 
         $logpath = $DOKU_INC . "/data/pages/spamlogger";
         $fd = fopen("/tmp/spampath", "a");
-        fwrite($logpath . "\n");
+        fwrite($fd, $logpath . "\n");
         fclose($fd);
 
         $this->logger = new SpamLogger($logpath);
