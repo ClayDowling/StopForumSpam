@@ -24,11 +24,7 @@ class action_plugin_stopforumspam extends DokuWiki_Action_Plugin
         $this->loadConfig();
         $this->tolerance = $this->conf['tolerance'];
 
-        $base = DOKU_INC;
-        if(defined('DOKU_FARM')) {
-            $base = DOKU_FARM;
-        }
-        $logpath = $base . "data/pages/spamlogger";
+        $logpath = DOKU_CONF . "/../data/pages/spamlogger";
         $fd = fopen("/tmp/spampath", "a");
         fwrite($fd, $logpath . "\n");
         fclose($fd);
