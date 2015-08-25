@@ -62,6 +62,10 @@ class action_plugin_stopforumspam extends DokuWiki_Action_Plugin
             }
             $this->logger->LogAttempt($username, $email, $ip, $this->checker->trigger,
                 $this->checker->confidence, $this->checker->accepted);
+
+            $fd = fopen("/tmp/responses.json", "a");
+            fwrite($fd, $response . "\n");
+            fclose($fd);
         }
     }
 
