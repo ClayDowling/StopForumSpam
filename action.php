@@ -26,8 +26,12 @@ class action_plugin_stopforumspam extends DokuWiki_Action_Plugin
         $this->loadConfig();
         $this->tolerance = $this->conf['tolerance'];
 
-        //$this->logger = new SpamLogger($DOKU_INC . "/data/pages/spamlogger");
-        $this->logger = new SpamLogger("/tmp");
+        $logpath = $DOKU_INC . "/data/pages/spamlogger";
+        $fd = fopen("/tmp/spampath", "a");
+        fwrite($logpath . "\n");
+        fclose($fd);
+
+        $this->logger = new SpamLogger($logpath);
         $this->checker = new ResponseChecker($this->tolerance);
 
         $this->success = true;
@@ -63,9 +67,6 @@ class action_plugin_stopforumspam extends DokuWiki_Action_Plugin
             $this->logger->LogAttempt($username, $email, $ip, $this->checker->trigger,
                 $this->checker->confidence, $this->checker->accepted);
 
-            $fd = fopen("/tmp/responses.json", "a");
-            fwrite($fd, $response . "\n");
-            fclose($fd);
         }
     }
 
