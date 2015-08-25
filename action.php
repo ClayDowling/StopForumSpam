@@ -19,7 +19,7 @@ class action_plugin_stopforumspam extends DokuWiki_Action_Plugin
     protected $checker;
 
     public function __construct() {
-        parent::__construct();
+        //parent::__construct();
 
         global $DOKU_INC;
 
