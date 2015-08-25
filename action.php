@@ -21,12 +21,10 @@ class action_plugin_stopforumspam extends DokuWiki_Action_Plugin
 
     public function __construct() {
 
-        global $DOKU_CONF;
-
         $this->loadConfig();
         $this->tolerance = $this->conf['tolerance'];
 
-        $logpath = $DOKU_CONF . "/../data/pages/spamlogger";
+        $logpath = DOKU_INC . "/data/pages/spamlogger";
         $fd = fopen("/tmp/spampath", "a");
         fwrite($fd, $logpath . "\n");
         fclose($fd);
