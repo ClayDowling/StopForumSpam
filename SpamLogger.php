@@ -97,10 +97,16 @@ IDXSQL;
         foreach($files as $file) {
             $csvfile = $this->logdir . '/' . $file;
             $zipfile->addFile($csvfile, "archive/" . $file);
-            unlink($csvfile);
         }
 
         $zipfile->close();
+
+        // NOTE: Cannot delete these files until after closing the ZipArchive
+        foreach($files as $file) {
+            $csvfile = $this->logdir . '/' . $file;
+            unlink($csvfile);
+        }
+
     }
 
     private function ImportOldFile($filename)

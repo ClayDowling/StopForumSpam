@@ -123,6 +123,9 @@ FILE2;
         $this->assertTrue(file_exists($archivefile), "Archive file " . $archivefile ." not present");
     }
 
+    /**
+     * @depends test_WhenLoadCsvIsCalled_WithCsvFilesPresent_ArchiveFileIsCreated
+     */
     public function test_WhenLoadCsvIsCalled_WithCsvFilesPresent_ArchiveFileContainsFileNamesInArchiveFolder()
     {
         $this->spamLogger->LoadCSV();
@@ -135,6 +138,9 @@ FILE2;
         $zip->close();
     }
 
+    /**
+     * @depends test_WhenLoadCsvIsCalled_WithCsvFilesPresent_ArchiveFileContainsFileNamesInArchiveFolder
+     */
     public function test_WhenLoadCsvIsCalled_WithCsvFilesPresent_CsvFilesAreRemoved()
     {
         $this->spamLogger->LoadCSV();
