@@ -134,4 +134,12 @@ FILE2;
         $this->assertEquals("archive/StopForumSpam-2.csv", $zip->getNameIndex(2));
         $zip->close();
     }
+
+    public function test_WhenLoadCsvIsCalled_WithCsvFilesPresent_CsvFilesAreRemoved()
+    {
+        $this->spamLogger->LoadCSV();
+
+        $this->assertEquals(false, file_exists($this->spamLogger->logdir . "/StopForumSpam-1.csv"), "StopForumSpam-1.csv was not removed");
+        $this->assertEquals(false, file_exists($this->spamLogger->logdir . "/StopForumSpam-2.csv"), "StopForumSpam-2.csv was not removed");
+    }
 }

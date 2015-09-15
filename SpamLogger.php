@@ -95,7 +95,9 @@ IDXSQL;
 
         $zipfile->addEmptyDir("archive");
         foreach($files as $file) {
-            $zipfile->addFile($this->logdir . '/' . $file, "archive/" . $file);
+            $csvfile = $this->logdir . '/' . $file;
+            $zipfile->addFile($csvfile, "archive/" . $file);
+            unlink($csvfile);
         }
 
         $zipfile->close();
