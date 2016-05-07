@@ -35,6 +35,7 @@ class action_plugin_stopforumspam extends DokuWiki_Action_Plugin
     public function register(Doku_Event_Handler $controller)
     {
         $controller->register_hook('AUTH_USER_CHANGE', 'BEFORE', $this, "check_spammer_database");
+        $controller->register_hook('DISCUSSION_SPAM_CHECK', 'BEFORE', $this, "check_comment_spam");
     }
 
     private function do_check($username, $email, $ip)
@@ -45,24 +46,53 @@ class action_plugin_stopforumspam extends DokuWiki_Action_Plugin
         return $json;
     }
 
+    public function is_a_spammer($username, $email, $ip) {
+        $spammer = false;
+        $response = $this->do_check($username, $email, $ip);
+        if ($this->checker->userIsValid($response) === false) {
+            msg('Potentially a spammer', -1);
+            $spammer = true;
+        }
+        $this->logger->LogAttempt($username, $email, $ip, $this->checker->trigger,
+            $this->checker->confidence, $this->checker->accepted);
+
+        return $spammer;
+    }
+
     public function check_spammer_database(Doku_Event $event, $param)
     {
-        $can_modify = true;
         if ($event->data['type'] == 'create') {
 
             $username = $event->data['params'][0];
             $email = $event->data['params'][3];
             $ip = $_SERVER['REMOTE_ADDR'];
-            $response = $this->do_check($username, $email, $ip);
 
-            if ($this->checker->userIsValid($response) === false) {
-                msg('Potentially a spammer', -1);
+            if ($this->is_a_spammer($username, $email, $ip)) {
                 $event->preventDefault();
             }
-            $this->logger->LogAttempt($username, $email, $ip, $this->checker->trigger,
-                $this->checker->confidence, $this->checker->accepted);
-
         }
     }
 
+    public function check_comment_spam(Doku_Event $event, $comment) {
+        $ip = $_SERVER['REMOTE_ADDR'];
+        $username = '';
+        $email = '';
+
+        if (isset($comment['user'])) {
+            $user = $comment['user'];
+            if (isset($user['name'])) {
+                $username = $user['name'];
+            }
+            if (isset($user['mail'])) {
+                $email = $user['mail'];
+            }
+        }
+
+        if ($this->is_a_spammer($username, $email, $ip)) {
+            return true;
+        } else {
+            return false;
+        }
+
+    }
 }
