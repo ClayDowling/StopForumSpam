@@ -148,4 +148,10 @@ FILE2;
         $this->assertEquals(false, file_exists($this->spamLogger->logdir . "/StopForumSpam-1.csv"), "StopForumSpam-1.csv was not removed");
         $this->assertEquals(false, file_exists($this->spamLogger->logdir . "/StopForumSpam-2.csv"), "StopForumSpam-2.csv was not removed");
     }
+
+    public function test_WhenBrowseIsCalled_ArrayIsReturnedWithColumns()
+    {
+        $result = $this->spamLogger->Browse(0);
+
+    }
 }

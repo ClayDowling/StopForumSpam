@@ -155,4 +155,8 @@ IMPORTSQL;
         $db->exec("COMMIT");
     }
 
+    public function Browse($offset)
+    {
+        return array();
+    }
 }
